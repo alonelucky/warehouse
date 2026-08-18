@@ -1,15 +1,23 @@
 # Go
 backend/warehouse
-backend/__debug_bin*
+backend/main
+__debug_bin*
 
 # SQLite 数据
-backend/*.db
-backend/*.db-shm
-backend/*.db-wal
+*.db
+*.db-shm
+*.db-wal
 
 # Node
 frontend/node_modules/
 frontend/dist/
+
+# 后端嵌入的前端构建产物(保留占位 index.html)
+backend/static/dist/*
+!backend/static/dist/index.html
+
+# 编译产物
+bin/
 
 # 编辑器与日志
 .vscode/

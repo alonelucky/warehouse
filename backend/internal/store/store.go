@@ -227,7 +227,7 @@ func (s *Store) ListProducts(q string) ([]Product, error) {
 	}
 	defer rows.Close()
 
-	var out []Product
+	out := []Product{}
 	for rows.Next() {
 		var p Product
 		if err := rows.Scan(&p.ID, &p.Name, &p.Spec, &p.Unit, &p.Category, &p.CreatedAt, &p.UpdatedAt,
@@ -650,7 +650,7 @@ func (s *Store) ListMovements(mtype string, productID int64, q string, limit int
 	}
 	defer rows.Close()
 
-	var out []Movement
+	out := []Movement{}
 	for rows.Next() {
 		var m Movement
 		var tgt sql.NullInt64
@@ -692,7 +692,7 @@ func (s *Store) ListAudit(action, q string, limit int) ([]AuditEntry, error) {
 	}
 	defer rows.Close()
 
-	var out []AuditEntry
+	out := []AuditEntry{}
 	for rows.Next() {
 		var a AuditEntry
 		var detail string
@@ -749,7 +749,7 @@ func (s *Store) ListLocations() ([]Location, error) {
 	}
 	defer rows.Close()
 
-	var out []Location
+	out := []Location{}
 	for rows.Next() {
 		var l Location
 		if err := rows.Scan(&l.ID, &l.Name, &l.CreatedAt, &l.QtyLeft); err != nil {
@@ -785,7 +785,7 @@ func (s *Store) ListBatches(productID int64, q string) ([]Batch, error) {
 	}
 	defer rows.Close()
 
-	var out []Batch
+	out := []Batch{}
 	for rows.Next() {
 		var b Batch
 		if err := rows.Scan(&b.ID, &b.ProductID, &b.ProductName, &b.Qty, &b.QtyLeft,

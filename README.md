@@ -18,22 +18,29 @@
 ## 启动
 
 ```bash
-# 后端(默认端口 8080)
-cd backend
-WAREHOUSE_OPERATOR=你的名字 go run .
+# 构建(前端 + server + gui)
+make build
 
-# 前端(默认端口 5173)
-cd frontend
-npm install
-BACKEND_URL=http://127.0.0.1:8080 npm run dev
+# server 模式:内置页面,浏览器访问 http://127.0.0.1:8080
+WAREHOUSE_OPERATOR=你的名字 ./bin/warehouse-server
+
+# gui 模式:内置服务 + 桌面窗口
+WAREHOUSE_OPERATOR=你的名字 ./bin/warehouse-gui
 ```
 
 `WAREHOUSE_OPERATOR` 是留痕里的操作人,不设置默认 `admin`。
-后端数据默认存在 `backend/warehouse.db`(SQLite),可用 `-db` 指定路径。
+后端数据默认存在 `backend/warehouse.db`(SQLite),server 模式用 `-db` 指定路径,gui 模式用环境变量 `WAREHOUSE_DB`。
 
 ## 开发
 
-- 后端:纯 Go 标准库 + `modernc.org/sqlite`,入口 `backend/main.go`;MVC 分层参照 `../disapp/backend`:
+- 单独构建:`make ui`(前端构建并嵌入后端)、`make server`、`make gui`(gui 需要 CGO,自动开启)
+- 前端热更新:后端 `cd backend && go run ./cmd/server -addr :8080`,前端 `cd frontend && BACKEND_URL=http://127.0.0.1:8080 npm run dev`
+
+## 结构
+
+- 后端:纯 Go 标准库 + `modernc.org/sqlite`;MVC 分层参照 `../disapp/backend`:
+  - `cmd/server`、`cmd/gui`:两个入口模式,共享 `internal/app` 启动逻辑
+  - `static`:嵌入前端构建产物
   - `pkg/web`:HTTP 中间件(Recoverer / Logger / RateLimit)与统一 `{code,msg,data}` 响应
   - `internal/router`:路由与中间件链
   - `internal/controller`:HTTP 层,解析参数并调用 Service

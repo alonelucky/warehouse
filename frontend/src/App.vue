@@ -108,11 +108,11 @@ async function loadState() {
     api.stats(),
     api.meta(),
   ])
-  products.value = p
-  batches.value = b
-  locations.value = loc
-  movements.value = m
-  audits.value = a
+  products.value = p ?? []
+  batches.value = b ?? []
+  locations.value = loc ?? []
+  movements.value = m ?? []
+  audits.value = a ?? []
   stats.value = st
   operator.value = meta.operator
 }
@@ -120,7 +120,7 @@ async function loadState() {
 function changeBatches() {
   api
     .batches({ q: bQ.value })
-    .then((b) => (batches.value = b))
+    .then((b) => (batches.value = b ?? []))
     .catch(fail)
 }
 
@@ -247,14 +247,14 @@ async function submitProduct(inp: ProductInput) {
 function changeMovements() {
   api
     .movements({ type: mType.value, q: mQ.value })
-    .then((m) => (movements.value = m))
+    .then((m) => (movements.value = m ?? []))
     .catch(fail)
 }
 
 function changeAudit() {
   api
     .audit({ action: aAction.value, q: aQ.value })
-    .then((a) => (audits.value = a))
+    .then((a) => (audits.value = a ?? []))
     .catch(fail)
 }
 
