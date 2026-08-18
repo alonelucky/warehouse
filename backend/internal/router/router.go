@@ -35,7 +35,7 @@ func Routes(c *controller.Controller, dist fs.FS) http.Handler {
 	mux.HandleFunc("GET /api/audit", web.Chain(pub...)(c.ListAudit))
 
 	if dist != nil {
-		mux.Handle("/", spaHandler(dist))
+		mux.Handle("/", http.FileServerFS(dist))
 	}
 	return mux
 }
