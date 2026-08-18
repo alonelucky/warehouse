@@ -1,0 +1,16 @@
+# Go
+backend/warehouse
+backend/__debug_bin*
+
+# SQLite 数据
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# 编辑器与日志
+.vscode/
+*.log
