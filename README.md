@@ -31,6 +31,32 @@ WAREHOUSE_OPERATOR=你的名字 ./bin/warehouse-gui
 `WAREHOUSE_OPERATOR` 是留痕里的操作人,不设置默认 `admin`。
 后端数据默认存在 `backend/warehouse.db`(SQLite),server 模式用 `-db` 指定路径,gui 模式用环境变量 `WAREHOUSE_DB`。
 
+## 平台说明
+
+- server 模式:纯 Go,任意平台可构建运行;浏览器访问 `http://127.0.0.1:8080`
+- gui 模式:桌面窗口 + 内置服务,需要 CGO:
+  - macOS:安装 Xcode Command Line Tools 即可
+  - Linux:需要 `libgtk-3-dev` 和 `libwebkit2gtk-4.0-dev`(本仓库 GitHub Actions 会自动安装)
+  - Windows:未纳入 CI 构建,可自行安装 MSYS2/MinGW 后 `CGO_ENABLED=1 go build ./cmd/gui`
+- 数据文件是单个 SQLite 文件(`warehouse.db`),连同 `-wal`/`-shm` 一起备份即可
+
+## 发布
+
+打 tag 并推送,GitHub Actions 会自动构建 server 和 gui 并创建 Release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+产物命名 `warehouse-server-<平台>-<架构>`、`warehouse-gui-<平台>-<架构>`,覆盖 Linux/macOS。
+
+发布流程(`.github/workflows/release.yml`):
+
+1. 先构建前端并上传 `ui-dist` 工件
+2. Linux/macOS 并行下载前端产物,编译 server 与 gui
+3. `softprops/action-gh-release` 把二进制挂到 tag 对应的 Release
+
 ## 开发
 
 - 单独构建:`make ui`(前端构建并嵌入后端)、`make server`、`make gui`(gui 需要 CGO,自动开启)

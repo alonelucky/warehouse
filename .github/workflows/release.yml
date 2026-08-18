@@ -1,0 +1,74 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+          mkdir -p ../backend/static/dist
+          cp -R dist/. ../backend/static/dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ui-dist
+          path: backend/static/dist
+
+  build:
+    needs: ui
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ui-dist
+          path: backend/static/dist
+
+      - name: Install GUI dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+
+      - name: Build server
+        run: |
+          cd backend
+          go build -o ../warehouse-server-${{ runner.os }}-${{ runner.arch }} ./cmd/server
+
+      - name: Build GUI
+        run: |
+          cd backend
+          CGO_ENABLED=1 go build -o ../warehouse-gui-${{ runner.os }}-${{ runner.arch }} ./cmd/gui
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            warehouse-server-*
+            warehouse-gui-*
