@@ -7,7 +7,8 @@ import (
 	"warehouse/internal/app"
 	"warehouse/static"
 
-	webview "github.com/webview/webview_go"
+	"github.com/opentoys/webview"
+	"github.com/opentoys/webview/types"
 )
 
 func main() {
@@ -33,10 +34,16 @@ func main() {
 	defer a.WaitShutdown()
 	log.Printf("warehouse gui serving %s (db=%s, operator=%s)", a.URL, dbPath, operator)
 
-	w := webview.New(false)
-	defer w.Destroy()
+	w, e := webview.New(webview.Options{
+		Debug: true,
+	})
+	if e != nil {
+		log.Fatalln(e)
+	}
+
+	defer w.Close()
 	w.SetTitle("仓管家")
-	w.SetSize(1024, 768, webview.HintNone)
+	w.SetSize(1024, 768, types.SizeNone)
 	w.Navigate(a.URL)
 	w.Run()
 }

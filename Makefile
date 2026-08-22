@@ -18,7 +18,7 @@ server: ui
 
 # gui 模式:内置服务 + 桌面 webview
 gui: ui
-	cd backend && CGO_ENABLED=1 go build -o ../$(BIN)/warehouse-gui ./cmd/gui
+	cd backend && go build -o ../$(BIN)/warehouse-gui ./cmd/gui
 
 build: server gui
 
